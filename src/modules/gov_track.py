@@ -355,7 +355,7 @@ class Votes():
 
 	def __init__(self):
 		pass
-	
+
 	def member_id(self):
 		return str(self.parsed_json['objects'][0]['id'])
 
@@ -379,7 +379,7 @@ class Votes():
 		return self.parsed_json
 
 		#You can filter out whether or non someone was in office of the time of the bill and they weren't in office, you can just not run the program.
-	
+
 	def vote_voter_by_id(self, id,bill_ID):
 		#id number
 		self.ref_id = id
@@ -392,41 +392,41 @@ class Votes():
 
 class Committee():
 
-    def __init__(self): 
-        f = Committee.urllib2.urlopen('https://www.govtrack.us/api/v2/committee?obsolete=false')
-        json_string = f.read()
-        parsed_json = Committee.json.loads(json_string)
-        f.close()
-	    self.committees_list = []
-	    self.subcommittees_list = []
-		
-		#these loops parse through committees and categorize them as main or subcommittees. 
-	    for committeeName in parsed_json["objects"]:
-	        try: 
-	            self.committees_list.append([{"name": committeeName['committee']['name']}, {"id": committeeName['committee']['id']}])
-	            self.subcommittees_list.append([{"name": committeeName['name']}, {"id": committeeName['id']}])
-	        except: 
-	            self.committees_list.append([{"name": committeeName['name']}, {"id": committeeName['id']}])
-	    
-	    self.combinedLists = self.committees_list + self.subcommittees_list
-		
-		#this is the function that gets an ID for the specified committee 
-	    def getID(self, committeeName):
-	        for x in self.combinedLists:
-	            if x[0]["name"] == committeeName:
-	                self.committee_id = x[1]["id"]
-	                return str(self.committee_id)
+	def __init__(self): 
+		f = Committee.urllib2.urlopen('https://www.govtrack.us/api/v2/committee?obsolete=false')
+		json_string = f.read()
+		parsed_json = Committee.json.loads(json_string)
+		f.close()
+		self.committees_list = []
+		self.subcommittees_list = []
 
-    def details_by_committee_name(self, committeeName): 
- 		
- 		#this api gets the details on each committee, the variable "committeeN" is empty because it needs an input.
-        committeeN = committeeName
-        committeeVar = Committee().getID(committeeN)
-        f = Committee.urllib2.urlopen('https://www.govtrack.us/api/v2/committee_member?committee=' + committeeVar + "&limit=4000")
-        json_string = f.read()
-        parsed_json = Committee.json.loads(json_string)
-        f.close()
-        return parsed_json['objects']	
+		#these loops parse through committees and categorize them as main or subcommittees. 
+		for committeeName in parsed_json["objects"]:
+		    try: 
+		        self.committees_list.append([{"name": committeeName['committee']['name']}, {"id": committeeName['committee']['id']}])
+		        self.subcommittees_list.append([{"name": committeeName['name']}, {"id": committeeName['id']}])
+		    except: 
+		        self.committees_list.append([{"name": committeeName['name']}, {"id": committeeName['id']}])
+
+		self.combinedLists = self.committees_list + self.subcommittees_list
+
+	#this is the function that gets an ID for the specified committee 
+		def getID(self, committeeName):
+			for x in self.combinedLists:
+				if x[0]["name"] == committeeName:
+					self.committee_id = x[1]["id"]
+					return str(self.committee_id)
+
+	def details_by_committee_name(self, committeeName): 
+		
+		#this api gets the details on each committee, the variable "committeeN" is empty because it needs an input.
+		committeeN = committeeName
+		committeeVar = Committee().getID(committeeN)
+		f = Committee.urllib2.urlopen('https://www.govtrack.us/api/v2/committee_member?committee=' + committeeVar + "&limit=4000")
+		json_string = f.read()
+		parsed_json = Committee.json.loads(json_string)
+		f.close()
+		return parsed_json['objects']	
 
 	def members_by_committee_name(self, committeeName)
 		CommitteeMemberList = []
@@ -437,13 +437,13 @@ class Committee():
 
 	def committee_by_id(self,committee_id):
 		f = Committee.urllib2.urlopen('https://www.govtrack.us/api/v2/committee/' + committee_id)
-        json_string = f.read()
-        parsed_json = Committee.json.loads(json_string)
-        f.close()
+		json_string = f.read()
+		parsed_json = Committee.json.loads(json_string)
+		f.close()
 
-        return parsed_json
+		return parsed_json
 
-   	def members_by_committee_id(self, committee_id)
+	def members_by_committee_id(self, committee_id)
 		CommitteeMemberList = []
 		for member in Committee().details_by_committee_id(committee_id):
 			CommitteeMemberList.append({'name': member['person']['name'], 'committee_role':member['role_label']})
@@ -451,12 +451,12 @@ class Committee():
 		return CommitteeMemberList
 
 	def details_by_committee_id(self, committee_id): 
-        f = Committee.urllib2.urlopen('https://www.govtrack.us/api/v2/committee_member?committee=' + committee_id + "&limit=4000")
-        json_string = f.read()
-        parsed_json = Committee.json.loads(json_string)
-        f.close()
-        
-        return parsed_json['objects']
+		f = Committee.urllib2.urlopen('https://www.govtrack.us/api/v2/committee_member?committee=' + committee_id + "&limit=4000")
+		json_string = f.read()
+		parsed_json = Committee.json.loads(json_string)
+		f.close()
+
+		return parsed_json['objects']
 
 
 

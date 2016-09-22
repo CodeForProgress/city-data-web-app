@@ -1,7 +1,7 @@
-from flask import Flask
+from flask import Flask, render_template, request
 from livereload import Server
 from datetime import datetime
-from modules.gov_track import * 
+from modules.gov_track import *  
 
 
 import urllib2
@@ -26,8 +26,18 @@ api = tweepy.API(auth)
 @app.route("/")
 def home():
 
-	return "home"
+	return render_template("home.html")
 
+@app.route("/search", methods=["POST", "GET"])
+def search():
+	if request.method == "POST"
+		addressLine1 = request.form['addressLine1']
+		addressLine2 = request.form["addressLine2"]
+		city = request.form['city']
+		state = request.form['state']
+		zipCode = request.form['zipCode']
+
+	return "The address is: %s, %s %s, %s %s" %(addressLine1,addressLine2,city,state,zipCode)
 
 
 Server(app.wsgi_app).serve()
