@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Search Address</title>
+</head>
+<body>
+{% if error_message %}
+{{ error_message }}
+{% endif %}
+
+<form action="/search" method="POST">
+	<label>Address Line 1</label>
+	<input type="text" name="addressLine1"><br>
+	<label>Address Line 2</label>
+	<input type="text" name="addressLine2"><br>
+	<label>City</label>
+	<input type="text" name="city">
+	<label>State</label>
+	<input type="text" name="state">
+	<label>Zip Code</label>
+	<input type="number" name="zipCode"><br>
+	<input type="submit" value="Submit">
+</form>
+
+</body>
+</html>

@@ -1,7 +1,8 @@
-from flask import Flask
+from flask import Flask, render_template, request, redirect, session
 from livereload import Server
 from datetime import datetime
 from modules.gov_track import * 
+from modules.functions.funct import *
 
 
 import urllib2
@@ -13,6 +14,7 @@ import tweepy
 
 app = Flask(__name__)
 app.debug = True
+app.secret_key = 'wou029092101983i32wop823'
 
 sunlight.config.API_KEY = "ed9d8054bcca4773a803aa8c9b77e79a"
 lob.api_key = "test_32f9cf853c605d272e35567fadb984b4318"
@@ -25,8 +27,61 @@ api = tweepy.API(auth)
 
 @app.route("/")
 def home():
+	return render_template('home.html')
 
-	return "home"
+@app.route("/search", methods=["GET", "POST"])
+def search():
+	if request.method=="POST":
+		addressLine1 = request.form["addressLine1"]
+		addressLine2 = request.form["addressLine2"]
+		city = request.form["city"]
+		state = request.form["state"]
+		zipCode = request.form['zipCode']
+		try:
+			verifiedAddress = lob.Verification.create(
+				address_line1=addressLine1,
+				address_line2=addressLine2,
+				address_city=city,
+				address_state=state,
+				address_zip=zipCode, 
+				)
+
+			session['address'] = verifiedAddress['address']
+			return redirect('/%s' %session['address']['address_city'])
+
+		except lob.error.InvalidRequestError:
+			error_message = "Invalid address. Please try again."
+			return render_template('home.html', error_message=error_message)
+
+@app.route("/<city_name>")
+def city_info(city_name):
+	address = session['address']['address_line1'] + ',' + session['address']['address_city'] + ',' + session['address']['address_state']
+	city = session['address']['address_city']
+	state = session['address']['address_state']
+	geocode_results = gmaps.geocode(address)
+
+	latitude = geocode_results[0]['geometry']['location']['lat']
+	longitude = geocode_results[0]['geometry']['location']['lng']
+
+	weather = urllib2.urlopen('http://api.wunderground.com/api/d13977cb92663c84/alerts/conditions/forecast/forecast10day/q/' + state + "/" + city.replace(" ", "_") + '.json')
+	json_string = weather.read()
+	weatherFile = json.loads(json_string)
+	weather.close()
+	
+	try: 
+		weatherAlert = {"description": weatherFile["alerts"][0]["description"], "message": weatherFile["alerts"][0]["message"]}
+	except IndexError:
+		weatherAlert = False
+
+
+	currentTemp = weatherFile["current_observation"]["temperature_string"]
+
+	dailyForecast = weatherFile["forecast"]["simpleforecast"]["forecastday"]
+
+	airQuality = breezometer(latitude, longitude)
+
+	return render_template('city.html', cityName = city, weatherAlert = weatherAlert, dailyForecast = dailyForecast, airQuality = airQuality, currentTemp = currentTemp)
+
 
 
 
