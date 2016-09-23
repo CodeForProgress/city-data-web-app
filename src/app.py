@@ -3,7 +3,7 @@ from livereload import Server
 from datetime import datetime
 from modules.gov_track import * 
 from modules.functions.funct import *
-
+from random import randint
 
 import urllib2
 import json
@@ -63,10 +63,7 @@ def city_info(city_name):
 	latitude = geocode_results[0]['geometry']['location']['lat']
 	longitude = geocode_results[0]['geometry']['location']['lng']
 
-	weather = urllib2.urlopen('http://api.wunderground.com/api/d13977cb92663c84/alerts/conditions/forecast/forecast10day/q/' + state + "/" + city.replace(" ", "_") + '.json')
-	json_string = weather.read()
-	weatherFile = json.loads(json_string)
-	weather.close()
+	weatherFile = weather(city, state)
 	
 	try: 
 		weatherAlert = {"description": weatherFile["alerts"][0]["description"], "message": weatherFile["alerts"][0]["message"]}
@@ -78,9 +75,12 @@ def city_info(city_name):
 
 	dailyForecast = weatherFile["forecast"]["simpleforecast"]["forecastday"]
 
-	airQuality = breezometer(latitude, longitude)
+	# airQuality = breezometer(latitude, longitude)
 
-	return render_template('city.html', cityName = city, weatherAlert = weatherAlert, dailyForecast = dailyForecast, airQuality = airQuality, currentTemp = currentTemp)
+	image = cityImage(city)[randint(0,3)]
+
+
+	return render_template('city.html', cityName = city, weatherAlert = weatherAlert, dailyForecast = dailyForecast, currentTemp = currentTemp, cityImage = image)
 
 
 

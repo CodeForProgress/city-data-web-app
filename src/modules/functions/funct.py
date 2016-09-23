@@ -13,3 +13,25 @@ def breezometer(latitude, longitude):
     return airQuality
 
 
+def weather(city, state):
+    weather = urllib2.urlopen('http://api.wunderground.com/api/d13977cb92663c84/alerts/conditions/forecast/forecast10day/q/' + state + "/" + city.replace(" ", "_") + '.json')
+    json_string = weather.read()
+    weatherFile = json.loads(json_string)
+    weather.close()
+
+    return weatherFile
+
+def cityImage(city):
+    imageFile = urllib2.urlopen('https://api.unsplash.com/search/photos?&query=' + city.replace(" ", "%20") + '&client_id=7c2701f5c05bf660ca41c6fd0e792994c7375c54d0c64e06c3997f7d82980b02')
+    json_string = imageFile.read()
+    images = json.loads(json_string)
+    imageFile.close()
+
+    x = images["results"][:4]
+
+    imageList = []
+
+    for image in x:
+        imageList.append(image["urls"]["regular"])
+
+    return imageList
