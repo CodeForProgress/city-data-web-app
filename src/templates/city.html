@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block body %}
+
+
+<div class="container">
+	<div class="row">
+		<div class=" col-sm-8">
+			<h1 class="lead text-muted">{{ cityName }}, {{ stateName }} </h1>
+		</div> 
+		<div class="col-sm-4">
+			<h2 class="text-info lead">{{ currentTemp }}</h2>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-sm-12">
+			<img class="img-responsive" src="{{ cityImage }}">
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-sm-4">
+			<h4 class="text-warning text-center">Ten Day Forecast</h4>
+			<ul class="list-group">
+  				{% for x in dailyForecast %} 
+  				<li class="list-group-item">
+  					 <p class="text-muted"><strong>{{ x["date"]["weekday"] }}, {{ x["date"]["monthname"] }}  {{ x["date"]["day"] }}</strong></p> 
+
+  					 <p>The high is: {{ x["high"]["fahrenheit"] }}<br>
+		 The low is: {{ x["low"]["fahrenheit"] }}</p>
+  				</li>
+
+  				 {% endfor %}
+			</ul>
+		</div>
+		<div class="col-sm-8">
+			<h3> Political Information</h3>
+			<hr>
+			
+		</div>
+	</div>
+
+	<div>
+	</div>
+
+<div>	
+
+
+{% endblock %}
+
+
